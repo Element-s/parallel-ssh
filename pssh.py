@@ -528,8 +528,10 @@ future releases - use self.run_command instead", DeprecationWarning)
         :param commands: (Optional) Override commands to get output from.\
         Uses running commands in pool if not given.
         :type commands: :mod:`gevent.Greenlet`
-        :rtype: Dictionary with host as key as in:
+        :rtype: Dictionary with host as key
 
+        **Example output**
+        
         ::
         
           {'myhost1': {'exit_code': exit code if ready else None,
@@ -545,7 +547,7 @@ future releases - use self.run_command instead", DeprecationWarning)
         >>> logger = logging.getLogger('pssh.host_logger')
         >>> for handler in logger.handlers: logger.removeHandler(handler)
         
-        **Example usage**:
+        **Example usage**
         
         >>> output = client.get_output()
         >>> for host in output: print output[host]['stdout']
@@ -566,6 +568,16 @@ future releases - use self.run_command instead", DeprecationWarning)
                                  'stderr' : stderr,
                                  'cmd' : cmd, })
         return output
+
+    def refresh_output(self, output):
+        """Convenience function for updating existing host output.
+        Gathers exit codes if available and updates output given in-place.
+        
+        :param output: Host output dictionary as returned by \
+        :mod:`pssh.ParallelSSHClient.get_output
+        :rtype: None"""
+        for host in output:
+            output[host].update({'exit_code': self.get_exit_code(output[host])})
 
     def get_exit_code(self, host_output):
         """Get exit code from host output if available
